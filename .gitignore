@@ -1,4 +1,5 @@
 deps
 *.o
+.ccls
 orkus
 .ccls-cache
