@@ -5,27 +5,32 @@
 #include "mongoose.h"
 
 #define HTTP_SUCCESS 200
-#define PARAM_SIZE 1024
+#define HOME_MESSAGE "orkus\n" \
+		     "https://github.com/jack-davidson/orkus\n\n" \
+		     "compiled with " COMPILER "\n" \
+		     "version " VERSION " commit " COMMIT "\n"
+
+#define http_return(status, headers, ...) \
+	mg_http_reply(c, status, headers, __VA_ARGS__); \
+	LOG(LL_INFO, ("%.*s %.*s", (int) req->method.len, req->method.ptr, \
+		(int) req->uri.len, req->uri.ptr))
 
 char address[64] = "http://localhost:3000";
 
 static void http_handler(struct mg_connection *c, int ev, void *ev_data, void *fn_data);
 int main(int argc, char **argv);
 
-static void http_handler(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
+static void
+http_handler(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
 {
-	struct mg_http_message *hm;
+	struct mg_http_message *req;
 
+	req = (struct mg_http_message *) ev_data;
 	if (ev == MG_EV_HTTP_MSG) {
-		hm = (struct mg_http_message *) ev_data;
-		if (mg_http_match_uri(hm, "/*")) {
-			char *param = malloc(PARAM_SIZE);
-			strncpy(param, hm->uri.ptr + 1, PARAM_SIZE);
-			param[hm->uri.len - 1] = '\0';
-			mg_http_reply(c, 200, NULL, "Success\n", param);
-			free(param);
+		if (mg_http_match_uri(req, "/schedule_item")) {
+			http_return(HTTP_SUCCESS, "", "/schedule_item: success\n");
 		} else {
-			mg_http_reply(c, 200, NULL, "");
+			http_return(HTTP_SUCCESS, "",  HOME_MESSAGE);
 		}
 	}
 }
@@ -43,9 +48,7 @@ main(int argc, char **argv)
 
 	mg_mgr_init(&mgr);
 	mg_http_listen(&mgr, address, http_handler, &mgr);
-	while (1) {
-		mg_mgr_poll(&mgr, 1000);
-	}
+	for (;;) mg_mgr_poll(&mgr, 1000);
 	mg_mgr_free(&mgr);
 
 	return 0;
