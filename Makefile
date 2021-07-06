@@ -5,7 +5,8 @@ MGSRC = ${MGINC}/mongoose.c
 MGOBJ = mongoose.o
 CFLAGS = -I${MGINC} -DDEBUG -DVERSION=${VERSION} \
 	 -DCOMPILER=\"${CC}\" \
-	 -DCOMMIT=\"$(shell git rev-parse --short HEAD)\"
+	 -DCOMMIT=\"$(shell git rev-parse --short HEAD)\" \
+	 -std=gnu99
 
 SRC = orkus.c
 OBJ = ${SRC:.c=.o} ${MGOBJ}
