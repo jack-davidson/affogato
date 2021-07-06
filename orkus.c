@@ -5,15 +5,20 @@
 #include "mongoose.h"
 
 #define HTTP_SUCCESS 200
-#define HOME_MESSAGE "orkus\n" \
+#define HOME_MESSAGE "orkus\n"					  \
 		     "https://github.com/jack-davidson/orkus\n\n" \
-		     "compiled with " COMPILER "\n" \
+		     "compiled with " COMPILER "\n"		  \
 		     "version " VERSION " commit " COMMIT "\n"
 
-#define http_return(status, headers, ...) \
-	mg_http_reply(c, status, headers, __VA_ARGS__); \
-	LOG(LL_INFO, ("%.*s %.*s", (int) req->method.len, req->method.ptr, \
-		(int) req->uri.len, req->uri.ptr))
+#define http_return(status, headers, ...)		 \
+	char ip_buffer[16];				 \
+	mg_ntoa(&c->peer, ip_buffer, sizeof(ip_buffer)); \
+	printf("%s %.*s %.*s\n", ip_buffer,		 \
+		(int) req->method.len,			 \
+		req->method.ptr,			 \
+		(int) req->uri.len,			 \
+		req->uri.ptr);				 \
+	mg_http_reply(c, status, headers, __VA_ARGS__)
 
 char address[64] = "http://localhost:3000";
 
@@ -45,6 +50,8 @@ main(int argc, char **argv)
 		strcpy(address, argv[1]);
 		printf("using address: %s\n", address);
 	}
+
+	printf("\nstarting orkus version " VERSION "\n");
 
 	mg_mgr_init(&mgr);
 	mg_http_listen(&mgr, address, http_handler, &mgr);
