@@ -11,27 +11,37 @@
 		     "version " VERSION " commit " COMMIT "\n"
 
 #define http_return(status, headers, ...)		 \
-	char ip_buffer[16];				 \
-	mg_ntoa(&c->peer, ip_buffer, sizeof(ip_buffer)); \
-	printf("%s %.*s %.*s\n", ip_buffer,		 \
-		(int) req->method.len,			 \
-		req->method.ptr,			 \
-		(int) req->uri.len,			 \
-		req->uri.ptr);				 \
-	mg_http_reply(c, status, headers, __VA_ARGS__)
+	{ \
+		char ip_buffer[16];				 \
+		mg_ntoa(&c->peer, ip_buffer, sizeof(ip_buffer)); \
+		printf("%s %.*s %.*s (%s:%i)\n", ip_buffer,		 \
+			(int) req->method.len,			 \
+			req->method.ptr,			 \
+			(int) req->uri.len,			 \
+			req->uri.ptr,				 \
+			__func__, __LINE__);			 \
+		mg_http_reply(c, status, headers, __VA_ARGS__);  \
+	}
 
-char address[64] = "http://localhost:3000";
+struct ok_config {
+	char *date;
+};
 
 static void http_handler(struct mg_connection *c, int ev, void *ev_data, void *fn_data);
+static void schedule_item(struct ok_config);
 int main(int argc, char **argv);
+
+char address[64] = "http://localhost:3000";
 
 static void
 http_handler(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
 {
 	struct mg_http_message *req;
+	char *error_message;
 
-	req = (struct mg_http_message *) ev_data;
-	if (ev == MG_EV_HTTP_MSG) {
+	switch (ev) {
+	case MG_EV_HTTP_MSG:
+		req = (struct mg_http_message *) ev_data;
 		if (mg_http_match_uri(req, "/schedule_item")) {
 			http_return(HTTP_SUCCESS, "", "/schedule_item: success\n");
 		} else {
