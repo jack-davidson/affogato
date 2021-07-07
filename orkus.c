@@ -5,23 +5,25 @@
 #include "mongoose.h"
 
 #define success 200
-#define res(status, headers, ...)					\
-	{								\
-		char ip_buffer[16];				 	\
-		mg_ntoa(&c->peer, ip_buffer, sizeof(ip_buffer));	\
-		printf("%s %.*s %.*s (%s:%i)\n", ip_buffer,		\
-			(int) req->method.len,				\
-			req->method.ptr,				\
-			(int) req->uri.len,				\
-			req->uri.ptr,					\
-			__func__, __LINE__);				\
-		mg_http_reply(c, status, headers, __VA_ARGS__);		\
-	}
+#define notfound 404
+#define default
+
+#define res(status, headers, ...)				\
+	char ip_buffer[16];				 	\
+	mg_ntoa(&c->peer, ip_buffer, sizeof(ip_buffer));	\
+	printf("%s %.*s %.*s (%s:%i)\n", ip_buffer,		\
+		(int) req->method.len,				\
+		req->method.ptr,				\
+		(int) req->uri.len,				\
+		req->uri.ptr,					\
+		__func__, __LINE__);				\
+	mg_http_reply(c, status, headers, __VA_ARGS__);		\
 
 #define http_route(http_method, route, response)				\
 	if (!(strncmp(req->method.ptr, #http_method, req->method.len))) {	\
 		if (mg_http_match_uri(req, route)) {				\
 			response;						\
+			return;							\
 		};								\
 	}
 
@@ -56,6 +58,8 @@ route(struct mg_connection *c, struct mg_http_message *req)
 	get("/ls", res(success, "", "ls\n"));
 	post("/echo", echo(c, req));
 	get("/hello", res(success, "", "world\n"));
+
+	default res(notfound, "", "404 not found\n");
 }
 
 static void
