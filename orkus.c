@@ -33,6 +33,12 @@
 #define post(route, response)			\
 	http_route(POST, route, response)
 
+#define delete(route, response)			\
+	http_route(DELETE, route, response)
+
+#define update(route, response)			\
+	http_route(UPDATE, route, response)
+
 static void http_handler(struct mg_connection *c, int ev, void *ev_data, void *fn_data);
 static void route(struct mg_connection *c, struct mg_http_message *req);
 static void echo(struct mg_connection *c, struct mg_http_message *req);
@@ -65,7 +71,8 @@ route(struct mg_connection *c, struct mg_http_message *req)
 static void
 http_handler(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
 {
-	if (ev == MG_EV_HTTP_MSG) route(c, ev_data);
+	if (ev == MG_EV_HTTP_MSG) return route(c, ev_data);
+	else return;
 }
 
 int
