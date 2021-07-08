@@ -3,8 +3,9 @@ VERSION = \"0.1\"
 MGINC = deps/mongoose
 MGSRC = ${MGINC}/mongoose.c
 MGOBJ = mongoose.o
-CFLAGS = -I${MGINC} -DDEBUG -DVERSION=${VERSION} \
-	 -DCOMPILER=\"${CC}\" \
+LDFLAGS = -lssl -lcrypto
+CFLAGS = -I${MGINC} \
+	 -DDEBUG -DVERSION=${VERSION} -DCOMPILER=\"${CC}\" \
 	 -DCOMMIT=\"$(shell git rev-parse --short HEAD)\" \
 	 -std=gnu99
 

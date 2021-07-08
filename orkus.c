@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <openssl/sha.h>
 
 #include "mongoose.h"
 
@@ -38,6 +39,7 @@
 #define update(route, response)			\
 	http_route(UPDATE, route, response)
 
+char **pathparams(char *path, char *pattern);
 static void http_handler(struct mg_connection *c, int ev, void *ev_data, void *fn_data);
 static void route(struct mg_connection *c, struct mg_http_message *req);
 static void echo(struct mg_connection *c, struct mg_http_message *req);
@@ -45,6 +47,12 @@ int main(int argc, char **argv);
 
 char address[64] = "http://localhost:3000";
 struct mg_mgr mgr;
+
+char **
+pathparams(char *path, char *pattern)
+{
+	return (char **)NULL;
+}
 
 static void
 echo(struct mg_connection *c, struct mg_http_message *req)
@@ -63,18 +71,7 @@ route(struct mg_connection *c, struct mg_http_message *req)
 	get("/ls", res(success, "", "ls\n"));
 	post("/echo", echo(c, req));
 	get("/hello", res(success, "", "world\n"));
-	get("/hi*", {
-		printf("hi\n");
-		if (3 == 3) {
-			printf("3 == 3\n");
-		}
-		if (PATH_MAX == 4096) {
-			printf("hello\n");
-		}
-		char *x;
-		x = malloc(1024);
-		strcpy(x, "The quick brown fox jumped over the lazy dog.");
-		free(x);
+	get("/hi/*/hello", {
 		res(success, "", "hi\n");
 	});
 
@@ -95,6 +92,18 @@ main(int argc, char **argv)
 	} else if (argc == 2) {
 		strcpy(address, argv[1]);
 		printf("using address: %s\n", address);
+	}
+
+	char *password = "hello";
+	unsigned char hash[SHA512_DIGEST_LENGTH];
+
+	SHA512_CTX ctx;
+	SHA512_Init(&ctx);
+	SHA512_Update(&ctx, password, strlen(password));
+	SHA512_Final(hash, &ctx);
+
+	for(int i = 0; i < SHA512_DIGEST_LENGTH; ++i) {
+		printf("%02x", hash[i]);
 	}
 
 	printf("\nstarting orkus version " VERSION "\n");
