@@ -9,13 +9,13 @@ CFLAGS = -I${MGINC} \
 	 -DCOMMIT=\"$(shell git rev-parse --short HEAD)\" \
 	 -std=gnu99
 
-SRC = orkus.c
+SRC = affogato.c test.c
 OBJ = ${SRC:.c=.o} ${MGOBJ}
 
-all: clean orkus
+all: clean test
 
-orkus: ${OBJ}
-	${CC} ${LDFLAGS} -o orkus ${OBJ}
+test: ${OBJ}
+	${CC} ${LDFLAGS} -o test ${OBJ}
 
 ${OBJ}: ${SRC} ${MGSRC}
 	${CC} ${CFLAGS} -c ${SRC} ${MGSRC}
@@ -26,6 +26,6 @@ deps:
 	git clone https://github.com/cesanta/mongoose deps/mongoose
 
 clean:
-	rm -f ${OBJ} orkus
+	rm -f ${OBJ} test
 
 .PHONY: deps
