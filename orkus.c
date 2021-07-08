@@ -6,7 +6,6 @@
 
 #define success 200
 #define notfound 404
-#define default
 
 #define res(status, headers, ...)				\
 	char ip_buffer[16];				 	\
@@ -64,8 +63,22 @@ route(struct mg_connection *c, struct mg_http_message *req)
 	get("/ls", res(success, "", "ls\n"));
 	post("/echo", echo(c, req));
 	get("/hello", res(success, "", "world\n"));
+	get("/hi*", {
+		printf("hi\n");
+		if (3 == 3) {
+			printf("3 == 3\n");
+		}
+		if (PATH_MAX == 4096) {
+			printf("hello\n");
+		}
+		char *x;
+		x = malloc(1024);
+		strcpy(x, "The quick brown fox jumped over the lazy dog.");
+		free(x);
+		res(success, "", "hi\n");
+	});
 
-	default res(notfound, "", "404 not found\n");
+	res(notfound, "", "404 not found\n");
 }
 
 static void
@@ -86,9 +99,10 @@ main(int argc, char **argv)
 
 	printf("\nstarting orkus version " VERSION "\n");
 
+	mg_log_set("1");
 	mg_mgr_init(&mgr);
 	mg_http_listen(&mgr, address, http_handler, &mgr);
-	for (;;) mg_mgr_poll(&mgr, 1000);
+	for (;;) mg_mgr_poll(&mgr, 500);
 	mg_mgr_free(&mgr);
 
 	return 0;
