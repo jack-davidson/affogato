@@ -6,8 +6,8 @@
 #include "mongoose.h"
 #include "affogato.h"
 
-char
-*hash(char *s)
+char *
+afhash(char *s)
 {
 	int i;
 	char *hexstring;
@@ -28,13 +28,13 @@ char
 }
 
 void
-hashfree(char *hexstring)
+afhashfree(char *hexstring)
 {
 	free(hexstring);
 }
 
 void
-server(void (*router)(afctx ctx),
+afserver(void (*router)(afctx *ctx),
 	char *address)
 {
 	struct mg_mgr mgr;
@@ -48,12 +48,12 @@ server(void (*router)(afctx ctx),
 void
 http_handler(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
 {
-	afctx ctx = {
-		.conn = c,
-		.msg = ev_data
-	};
-
-	if (ev == MG_EV_HTTP_MSG)
-		return ((void (*)(afctx ctx))fn_data)(ctx);
-	else return;
+	if (ev == MG_EV_HTTP_MSG) {
+		afctx ctx = {
+			.conn = c,
+			.msg = ev_data
+		};
+		((void (*)(afctx *ctx))fn_data)(&ctx);
+	}
+	return;
 }
