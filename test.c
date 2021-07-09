@@ -5,18 +5,14 @@
 char address[64] = "http://localhost:3000";
 
 static void
-route(struct mg_connection *c, struct mg_http_message *req)
+route(conn c, msg req)
 {
-	get("/", res(success, "",
-		"orkus task/scheduling manager\n"
-		"https://github.com/jack-davidson/orkus\n"
-	));
+	get(req, "/", res(c, req, success, "", "/: hello\n"));
+	get(req, "/ls", res(c, req, success, "", "ls\n"));
+	get(req, "/hello", res(c, req, success, "", "world\n"));
+	get(req, "/hi/*/hello", res(c, req, success, "", "hi\n"));
 
-	get("/ls", res(success, "", "ls\n"));
-	get("/hello", res(success, "", "world\n"));
-	get("/hi/*/hello", res(success, "", "hi\n"));
-
-	res(notfound, "", "404 not found\n");
+	res(c, req, notfound, "", "404 not found\n");
 }
 
 int

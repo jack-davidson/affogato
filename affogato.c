@@ -13,8 +13,7 @@ char
 	char *hexstring;
 	unsigned char hash[SHA512_DIGEST_LENGTH];
 
-	hexstring = malloc(SHA512_DIGEST_LENGTH * 2);
-	memset(hexstring, 0, SHA512_DIGEST_LENGTH * 2);
+	hexstring = calloc(SHA512_DIGEST_LENGTH * 2, 1);
 
 	SHA512_CTX ctx;
 	SHA512_Init(&ctx);
