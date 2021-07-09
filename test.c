@@ -4,6 +4,23 @@
 
 char address[64] = "http://localhost:3000";
 
+static void
+route(struct mg_connection *c, struct mg_http_message *req)
+{
+	get("/", res(success, "",
+		"orkus task/scheduling manager\n"
+		"https://github.com/jack-davidson/orkus\n"
+	));
+
+	get("/ls", res(success, "", "ls\n"));
+	get("/hello", res(success, "", "world\n"));
+	get("/hi/*/hello", {
+		res(success, "", "hi\n");
+	});
+
+	res(notfound, "", "404 not found\n");
+}
+
 int
 main(int argc, char **argv)
 {
@@ -13,16 +30,12 @@ main(int argc, char **argv)
 		printf("using address: %s\n", address);
 	}
 
-	unsigned char *password = hash("hello");
+	char *password = hash("hello");
 
-	char hexstring[1024] = {0};
-	for(int i = 0; i < SHA512_DIGEST_LENGTH; i++) {
-		sprintf(hexstring, "%s%02x", hexstring, password[i]);
-	}
-	printf("%s\n", hexstring);
+	printf("%s\n", password);
 
 	hashfree(password);
 
-	server(address);
+	server(route, address);
 	return 0;
 }

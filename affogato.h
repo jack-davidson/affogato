@@ -34,11 +34,9 @@
 #define update(route, response)			\
 	http_route(UPDATE, route, response)
 
-char **pathparams(char *path, char *pattern);
-unsigned char *hash(char *s);
-void hashfree(unsigned char *hash);
-void http_handler(struct mg_connection *c, int ev, void *ev_data, void *fn_data);
-void server(char *address);
-static void route(struct mg_connection *c, struct mg_http_message *req);
-static void echo(struct mg_connection *c, struct mg_http_message *req);
-
+char *hash(char *s);
+void hashfree(char *hexstring);
+void http_handler(struct mg_connection *c, int ev, void *ev_data, void (*fn_data));
+void server(void (*route)(struct mg_connection *c,
+	struct mg_http_message *req),
+	char *address);
