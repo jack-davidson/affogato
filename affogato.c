@@ -34,8 +34,8 @@ hashfree(char *hexstring)
 }
 
 void
-server(void (*router)(struct mg_connection *c,
-	struct mg_http_message *req), char *address)
+server(void (*router)(afctx ctx),
+	char *address)
 {
 	struct mg_mgr mgr;
 	mg_log_set("1");
@@ -46,11 +46,14 @@ server(void (*router)(struct mg_connection *c,
 }
 
 void
-http_handler(struct mg_connection *c, int ev, void *ev_data,
-	void *fn_data)
+http_handler(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
 {
+	afctx ctx = {
+		.conn = c,
+		.msg = ev_data
+	};
+
 	if (ev == MG_EV_HTTP_MSG)
-		return ((void (*)(struct mg_connection *c,
-			struct mg_http_message *req))fn_data)(c, ev_data);
+		return ((void (*)(afctx ctx))fn_data)(ctx);
 	else return;
 }

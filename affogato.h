@@ -3,43 +3,44 @@
 #define success 200
 #define notfound 404
 
-#define res(conn, req, status, headers, ...)				\
+#define afres(status, headers, ...)				\
 	char ip_buffer[16];				 	\
-	mg_ntoa(&conn->peer, ip_buffer, sizeof(ip_buffer));	\
+	mg_ntoa(&ctx.conn->peer, ip_buffer, sizeof(ip_buffer));	\
 	printf("%s %.*s %.*s (%s:%i)\n", ip_buffer,		\
-		(int) req->method.len,				\
-		req->method.ptr,				\
-		(int) req->uri.len,				\
-		req->uri.ptr,					\
+		(int) ctx.msg->method.len,				\
+		ctx.msg->method.ptr,				\
+		(int) ctx.msg->uri.len,				\
+		ctx.msg->uri.ptr,					\
 		__func__, __LINE__);				\
-	mg_http_reply(conn, status, headers, __VA_ARGS__);		\
+	mg_http_reply(ctx.conn, status, headers, __VA_ARGS__);		\
 
-#define http_route(req, http_method, route, response)				\
-	if (!(strncmp(req->method.ptr, #http_method, req->method.len))) {	\
-		if (mg_http_match_uri(req, route)) {				\
+#define afhttp_route(http_method, route, response)				\
+	if (!(strncmp(ctx.msg->method.ptr, #http_method, ctx.msg->method.len))) {	\
+		if (mg_http_match_uri(ctx.msg, route)) {				\
 			response;						\
 			return;							\
 		};								\
 	}
 
-#define get(req, route, response)			\
-	http_route(req, GET, route, response)
+#define afget(route, response)			\
+	afhttp_route(GET, route, response)
 
-#define post(req, route, response)			\
-	http_route(req, POST, route, response)
+#define afpost(route, response)			\
+	afhttp_route(POST, route, response)
 
-#define delete(req, route, response)			\
-	http_route(req, DELETE, route, response)
+#define afdelete(route, response)			\
+	afhttp_route(DELETE, route, response)
 
-#define update(req, route, response)			\
-	http_route(req, UPDATE, route, response)
+#define afupdate(route, response)			\
+	afhttp_route(UPDATE, route, response)
 
-typedef struct mg_connection *conn;
-typedef struct mg_http_message *msg;
+typedef struct {
+	struct mg_connection *conn;
+	struct mg_http_message *msg;
+} afctx;
 
 char *hash(char *s);
 void hashfree(char *hexstring);
 void http_handler(struct mg_connection *c, int ev, void *ev_data, void (*fn_data));
-void server(void (*route)(struct mg_connection *c,
-	struct mg_http_message *req),
+void server(void (*route)(afctx ctx),
 	char *address);
