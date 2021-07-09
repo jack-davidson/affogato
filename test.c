@@ -14,9 +14,7 @@ route(struct mg_connection *c, struct mg_http_message *req)
 
 	get("/ls", res(success, "", "ls\n"));
 	get("/hello", res(success, "", "world\n"));
-	get("/hi/*/hello", {
-		res(success, "", "hi\n");
-	});
+	get("/hi/*/hello", res(success, "", "hi\n"));
 
 	res(notfound, "", "404 not found\n");
 }
@@ -24,12 +22,6 @@ route(struct mg_connection *c, struct mg_http_message *req)
 int
 main(int argc, char **argv)
 {
-	if (argc == 1) {
-	} else if (argc == 2) {
-		strcpy(address, argv[1]);
-		printf("using address: %s\n", address);
-	}
-
 	char *password = hash("hello");
 
 	printf("%s\n", password);
