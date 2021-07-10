@@ -5,26 +5,21 @@ char address[64] = "http://localhost:3000";
 
 routes ({
 	get("/", {
-		for (int i = 0; i < 100; i++) {
-			if (!(i % 5)) 
-				fputs("Fizz", stdout);
-			if (!(i % 7)) 
-				fputs("Buzz", stdout);
-			else
-				printf("%i", i);
-			putc('\n', stdout);
-			
-		}
 		res(success, "", "/: done\n");
 	});
-	get("/ls", {
-		res(success, "", "ls\n");
+	get("/oneplusone", {
+		int sum;
+		sum = 1 + 1;
+		res(success, "", "/oneplusone: %i\n", sum);
 	});
-	get("/hello", {
-		res(success, "", "world\n");
-	});
-	get("/hi/*/hello", {
-		res(success, "", "hi\n");
+	post("/add", {
+		char buffer[ctx->msg->body.len];
+		char *c;
+
+		memcpy(buffer, ctx->msg->body.ptr, ctx->msg->body.len);
+
+		printf("%.*s\n", (int)ctx->msg->body.len, ctx->msg->body.ptr);
+		res(success, "", "/add: done\n");
 	});
 
 	/* fallback if no routes can be resolved */
