@@ -1,28 +1,36 @@
+#include <stdio.h>
 #include "affogato.h"
 
 char address[64] = "http://localhost:3000";
 
 routes ({
-	afget("/", {
-		afres(success, "", "/: hello\n")
+	get("/", {
+		for (int i = 0; i < 100; i++) {
+			if (!(i % 5)) 
+				fputs("Fizz", stdout);
+			if (!(i % 7)) 
+				fputs("Buzz", stdout);
+			else
+				printf("%i", i);
+			putc('\n', stdout);
+			
+		}
+		res(success, "", "/: done\n");
 	});
-	afget("/ls", {
-		afres(success, "", "ls\n")
+	get("/ls", {
+		res(success, "", "ls\n");
 	});
-	afget("/hello", {
-		afres(success, "", "world\n")
+	get("/hello", {
+		res(success, "", "world\n");
 	});
-	afget("/hi/*/hello", {
-		afres(success, "", "hi\n")
+	get("/hi/*/hello", {
+		res(success, "", "hi\n");
 	});
 
 	/* fallback if no routes can be resolved */
-	afres(notfound, "", "404 not found\n");
+	res(notfound, "", "404 not found\n");
 })
 
-int
-main(int argc, char **argv)
-{
-	aflisten(address);
-	return 0;
+int main(int argc, char **argv) {
+	affogato(address);
 }

@@ -3,7 +3,7 @@
 #define success 200
 #define notfound 404
 
-#define afres(status, headers, ...)				\
+#define res(status, headers, ...)				\
 	char ip_buffer[16];				 	\
 	mg_ntoa(&ctx->conn->peer, ip_buffer, sizeof(ip_buffer));	\
 	printf("%s %.*s %.*s (%s:%i)\n", ip_buffer,		\
@@ -22,16 +22,16 @@
 		};								\
 	}
 
-#define afget(route, response)			\
+#define get(route, response)			\
 	afhttp_route(GET, route, response)
 
-#define afpost(route, response)			\
+#define post(route, response)			\
 	afhttp_route(POST, route, response)
 
-#define afdelete(route, response)			\
+#define delete(route, response)			\
 	afhttp_route(DELETE, route, response)
 
-#define afupdate(route, response)			\
+#define update(route, response)			\
 	afhttp_route(UPDATE, route, response)
 
 #define routes(body)		\
@@ -39,7 +39,7 @@
 	_routes(afctx *ctx)	\
 		body
 
-#define aflisten(address)	\
+#define affogato(address)	\
 	afserver(_routes, address)
 
 typedef struct {
