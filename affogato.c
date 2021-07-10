@@ -11,9 +11,9 @@ afhash(char *s)
 {
 	int i;
 	char *hexstring;
-	unsigned char hash[SHA512_DIGEST_LENGTH];
+	unsigned char hash[512];
 
-	hexstring = calloc(SHA512_DIGEST_LENGTH * 2, 1);
+	hexstring = calloc(129, 1);
 
 	SHA512_CTX ctx;
 	SHA512_Init(&ctx);
@@ -21,7 +21,10 @@ afhash(char *s)
 	SHA512_Final(hash, &ctx);
 
 	for (i = 0; i < SHA512_DIGEST_LENGTH; i++) {
-		sprintf(hexstring, "%s%02x", hexstring, hash[i]);
+		char string[3];
+		sprintf(string, "%02x", hash[i]);
+		strcat(hexstring, string);
+		//sprintf(hexstring, "%s%02x", hexstring, hash[i]);
 	}
 
 	return hexstring;
