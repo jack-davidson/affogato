@@ -10,7 +10,7 @@ char *
 afhash(char *s)
 {
 	int i;
-	char *hexstring;
+	char *hexstring, hexchunk[3];
 	unsigned char hash[512];
 
 	hexstring = calloc(129, 1);
@@ -21,10 +21,8 @@ afhash(char *s)
 	SHA512_Final(hash, &ctx);
 
 	for (i = 0; i < SHA512_DIGEST_LENGTH; i++) {
-		char string[3];
-		sprintf(string, "%02x", hash[i]);
-		strcat(hexstring, string);
-		//sprintf(hexstring, "%s%02x", hexstring, hash[i]);
+		snprintf(hexchunk, 2, "%02x", hash[i]);
+		strcat(hexstring, hexchunk);
 	}
 
 	return hexstring;

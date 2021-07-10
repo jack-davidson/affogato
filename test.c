@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <err.h>
+#include <syslog.h>
 #include "affogato.h"
+
+#define LOGLEVEL 1
 
 char address[64] = "http://localhost:3000";
 
@@ -10,15 +14,11 @@ routes ({
 	get("/admin", {
 		res(success, "", "/admin: done\n");
 	});
-	post("/createpassword", {
-	});
-
-	/* fallback if no routes can be resolved */
 	res(notfound, "", "404 not found\n");
 })
 
 static void
-createpassword()
+createpassword(void)
 {
 	char *password, *hash, prompt[64];
 	FILE *fd;
@@ -34,7 +34,7 @@ createpassword()
 }
 
 static void
-authenticate()
+authenticate(void)
 {
 	char *password_input, *hashed_input, password_hash[64], prompt[64];
 	FILE *fd;
@@ -43,7 +43,9 @@ authenticate()
 	password_input = getpass(prompt);
 	hashed_input = afhash(password_input);
 
-	fd = fopen("password", "r");
+	if((fd = fopen("password", "r")) != NULL) {
+		puts("failed to open file 'password'\n");
+	}
 	fread(password_hash, 1, 64, fd);
 	if (!strncmp(password_hash, hashed_input, 64))
 		printf("hey");
