@@ -43,9 +43,10 @@ authenticate(void)
 	password_input = getpass(prompt);
 	hashed_input = afhash(password_input);
 
-	if((fd = fopen("password", "r")) != NULL) {
+	if((fd = fopen("password", "r")) == NULL) {
 		puts("failed to open file 'password'\n");
 	}
+
 	fread(password_hash, 1, 64, fd);
 	if (!strncmp(password_hash, hashed_input, 64))
 		printf("hey");
